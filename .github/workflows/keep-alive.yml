@@ -1,0 +1,13 @@
+name: Réveil du service Render
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping l'application
+        run: curl -sS -o /dev/null -w "%{http_code}\n" --max-time 30 https://progiciel-senelec.onrender.com/
