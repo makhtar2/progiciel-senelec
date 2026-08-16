@@ -1,0 +1,22 @@
+{% if erreur %}
+<div class="carte"><p class="avis avis--alerte">{{ erreur }}</p></div>
+{% else %}
+<div class="carte">
+  <div class="grille grille--3">
+    <div class="stat">
+      <span class="libelle">Puissance souscrite optimale</span>
+      <span class="valeur chiffre">{{ fmt.kw(resultat.ps_optimale) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Coût annuel fixe à l'optimum</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(resultat.cout_optimal) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Économie annuelle sur la partie fixe</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(economie) }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="carte">{{ graphique | safe }}</div>
+{% endif %}

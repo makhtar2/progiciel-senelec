@@ -29,31 +29,39 @@ efficacité énergétique).
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-streamlit run app.py
+uvicorn main:app --reload
 ```
 
-L'application s'ouvre dans le navigateur à l'adresse http://localhost:8501.
+L'application s'ouvre dans le navigateur à l'adresse http://localhost:8000.
 
 ## Structure du projet
 
 ```
 progiciel-senelec/
-├── app.py                   Point d'entrée et navigation
+├── main.py                   Point d'entrée FastAPI
 ├── moteur/
-│   ├── tarifs.py            Grille tarifaire (seul fichier à modifier
-│   │                        lors d'une révision des tarifs)
-│   ├── facturation.py       Moteur de calcul des factures
-│   ├── optimisation.py      Leviers d'optimisation et comparaisons
-│   └── stockage.py          Persistance SQLite des simulations
-├── vues/
-│   ├── simulation.py        Écran de simulation de facture
-│   ├── optimisation.py      Écran d'optimisation tarifaire
-│   ├── grille.py            Écran de consultation de la grille
-│   ├── tableau_bord.py      Tableau de bord
-│   └── theme.py             Charte graphique commune
-└── data/                    Base de données locale (créée au premier
-                             enregistrement)
+│   ├── tarifs.py             Grille tarifaire (seul fichier à modifier
+│   │                         lors d'une révision des tarifs)
+│   ├── facturation.py        Moteur de calcul des factures
+│   ├── optimisation.py       Leviers d'optimisation et comparaisons
+│   └── stockage.py           Persistance SQLite des simulations
+├── web/
+│   ├── formatage.py          Formatage des nombres (FCFA, kWh, %)
+│   ├── graphiques.py         Construction des graphiques Plotly
+│   ├── export_pdf.py         Export PDF d'une facture simulée
+│   └── routes/                Routes FastAPI (une par écran)
+├── templates/                 Gabarits Jinja2 (HTML + fragments HTMX)
+├── static/
+│   ├── css/app.css           Feuille de style (système de conception maison)
+│   └── js/app.js             Comportements clients (menu, onglets, bascules)
+└── data/                      Base de données locale (créée au premier
+                              enregistrement)
 ```
+
+L'interface est rendue côté serveur (Jinja2) et rendue dynamique par HTMX :
+chaque champ recalcule les résultats sans rechargement de page ni build
+JavaScript. Le moteur de calcul (`moteur/`) est indépendant de la couche web
+et peut être testé ou réutilisé isolément.
 
 ## Hypothèses de calcul
 

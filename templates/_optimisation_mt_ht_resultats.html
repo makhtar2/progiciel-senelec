@@ -1,0 +1,22 @@
+{% set meilleur = resultats[0] %}
+<div class="carte">
+  <div class="grille grille--2">
+    <div class="stat">
+      <span class="libelle">Option la plus avantageuse</span>
+      <span class="valeur chiffre">{{ meilleur.code }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Économie annuelle contre l'option la plus chère</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(resultats[-1].economie_annuelle) }}</span>
+    </div>
+  </div>
+  {% if recommandee %}
+  <p class="caption" style="margin-top:14px;">
+    Durée d'utilisation annuelle de la puissance souscrite : {{ fmt.nombre(heures, 0) }} h,
+    ce qui correspond réglementairement à l'option {{ recommandee }}
+    ({{ tarifs_sp[recommandee].libelle }}).
+  </p>
+  {% endif %}
+</div>
+
+<div class="carte">{{ graphique | safe }}</div>

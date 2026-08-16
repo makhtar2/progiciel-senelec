@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block contenu %}
+
+<div class="carte">
+  <h2>Basse tension, petite et moyenne puissance</h2>
+  <p class="caption">Facturation bimestrielle par tranches de consommation. En prépaiement Woyofal, la troisième tranche est facturée au prix de la deuxième.</p>
+  <div class="tableau-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th><th>Catégorie</th><th>Puissance souscrite</th>
+          <th>Tranche 1</th><th>Tranche 2</th><th>Tranche 3</th>
+          <th class="num">Prix T1</th><th class="num">Prix T2</th><th class="num">Prix T3</th><th class="num">Prix T3 Woyofal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tarifs_bt.values() %}
+        <tr>
+          <td>{{ t.code }}</td>
+          <td>{{ t.libelle }}</td>
+          <td class="chiffre">{{ fmt.nombre(t.ps_min, 0) }} à {{ fmt.nombre(t.ps_max, 0) }} kW</td>
+          <td class="chiffre">0 à {{ t.seuils[0] }} kWh</td>
+          <td class="chiffre">{{ t.seuils[0] + 1 }} à {{ t.seuils[1] }} kWh</td>
+          <td class="chiffre">au-delà de {{ t.seuils[1] }} kWh</td>
+          <td class="num chiffre">{{ fmt.nombre(t.prix[0]) }}</td>
+          <td class="num chiffre">{{ fmt.nombre(t.prix[1]) }}</td>
+          <td class="num chiffre">{{ fmt.nombre(t.prix[2]) }}</td>
+          <td class="num chiffre">{{ fmt.nombre(t.prix_woyofal[2]) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="carte">
+  <h2>Clients spéciaux : grande puissance, moyenne et haute tension</h2>
+  <p class="caption">Facturation mensuelle : prime fixe sur la puissance souscrite et comptage binôme heures creuses (K1) / heures de pointe (K2).</p>
+  <div class="tableau-scroll">
+    <table>
+      <thead>
+        <tr><th>Code</th><th>Catégorie</th><th class="num">Heures creuses</th><th class="num">Heures de pointe</th><th class="num">Prime fixe</th><th>Taxe communale</th></tr>
+      </thead>
+      <tbody>
+        {% for t in tarifs_sp.values() %}
+        <tr>
+          <td>{{ t.code }}</td>
+          <td>{{ t.libelle }}</td>
+          <td class="num chiffre">{{ fmt.nombre(t.prix_hc) }}</td>
+          <td class="num chiffre">{{ fmt.nombre(t.prix_hp) }}</td>
+          <td class="num chiffre">{{ fmt.nombre(t.prime_fixe) }}</td>
+          <td>{{ "oui" if t.tco_applicable else "non" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="grille grille--2">
+  <div class="carte">
+    <h2>Facteur de puissance — majoration</h2>
+    <p class="caption">Majoration du montant de l'énergie lorsque cos φ descend sous 0,80.</p>
+    <table>
+      <thead><tr><th>cos φ</th><th class="num">Majoration</th></tr></thead>
+      <tbody>
+        {% for seuil, taux in majorations %}
+        <tr>
+          <td>{{ ("%.2f"|format(seuil))|replace('.', ',') + " et plus" if seuil > 0 else "moins de 0,40" }}</td>
+          <td class="num chiffre">{{ fmt.pourcentage(taux, 0) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="carte">
+    <h2>Facteur de puissance — minoration</h2>
+    <p class="caption">Minoration accordée entre 0,96 et 1,00.</p>
+    <table>
+      <thead><tr><th>cos φ</th><th class="num">Minoration</th></tr></thead>
+      <tbody>
+        {% for seuil, taux in minorations.items() %}
+        <tr>
+          <td>{{ ("%.2f"|format(seuil))|replace('.', ',') }}</td>
+          <td class="num chiffre">{{ fmt.pourcentage(taux, 2) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="carte">
+  <h2>Taxes et paramètres</h2>
+  <table>
+    <tbody>
+      <tr><td>Taxe sur la valeur ajoutée (TVA)</td><td class="num chiffre">{{ fmt.pourcentage(tarifs.TAUX_TVA, 0) }}</td></tr>
+      <tr><td>Taxe communale sur les consommations (TCO)</td><td class="num chiffre">{{ fmt.pourcentage(tarifs.TAUX_TCO, 1) }}</td></tr>
+      <tr><td>Redevance par facture, clients généraux</td><td class="num chiffre">{{ fmt.fcfa(tarifs.REDEVANCE_BT) }}</td></tr>
+      <tr><td>Redevance par facture, clients spéciaux</td><td class="num chiffre">{{ fmt.fcfa(tarifs.REDEVANCE_SPECIAUX) }}</td></tr>
+      <tr><td>Coefficient de facturation du dépassement de puissance</td><td class="num chiffre">{{ fmt.nombre(tarifs.COEF_DEPASSEMENT_PS, 0) }} × prime fixe</td></tr>
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

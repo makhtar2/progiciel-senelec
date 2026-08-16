@@ -4,7 +4,7 @@ from datetime import datetime
 
 from fpdf import FPDF
 
-from . import theme
+from . import formatage as fmt
 
 _LARGEURS = (85, 35, 35, 30)
 _ENTETES = ("Désignation", "Valeur", "Tarif (F/unité)", "Montant")
@@ -47,12 +47,12 @@ def facture_pdf_bytes(facture) -> bytes:
         pdf.cell(_LARGEURS[1], 8, _safe(valeur), border=1)
         tarif_txt = f"{tarif_unitaire:,.2f}".replace(",", " ") if tarif_unitaire else ""
         pdf.cell(_LARGEURS[2], 8, _safe(tarif_txt), border=1, align="R")
-        pdf.cell(_LARGEURS[3], 8, _safe(theme.fcfa(montant)), border=1, align="R")
+        pdf.cell(_LARGEURS[3], 8, _safe(fmt.fcfa(montant)), border=1, align="R")
         pdf.ln()
 
     pdf.set_font("Helvetica", "B", 10)
     pdf.cell(sum(_LARGEURS[:3]), 8, _safe("Montant total toutes taxes"), border=1)
-    pdf.cell(_LARGEURS[3], 8, _safe(theme.fcfa(facture.total_ttc)), border=1, align="R")
+    pdf.cell(_LARGEURS[3], 8, _safe(fmt.fcfa(facture.total_ttc)), border=1, align="R")
     pdf.ln(12)
 
     pdf.set_font("Helvetica", "I", 8)

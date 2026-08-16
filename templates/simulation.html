@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block contenu %}
+
+<form id="form-simulation" data-segment="{{ segment }}"
+      hx-post="/simulation/calculer" hx-target="#resultats" hx-swap="innerHTML"
+      hx-trigger="change, keyup delay:500ms changed">
+
+  <div class="segmente">
+    <input type="radio" id="seg-bt" name="segment" value="bt" {{ 'checked' if segment == 'bt' else '' }}>
+    <label for="seg-bt">Basse tension (usage général)</label>
+    <input type="radio" id="seg-special" name="segment" value="special" {{ 'checked' if segment == 'special' else '' }}>
+    <label for="seg-special">Clients spéciaux (GP, MT, HT)</label>
+  </div>
+
+  <div class="carte champs-bt">
+    <div class="grille grille--3">
+      <div class="champ">
+        <label for="code_bt">Option tarifaire</label>
+        <select name="code_bt" id="code_bt">
+          {% for code, tarif in tarifs_bt.items() %}
+          <option value="{{ code }}" {{ 'selected' if code == code_bt else '' }}>{{ code }} — {{ tarif.libelle }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="champ">
+        <label for="conso">Consommation du bimestre (kWh)</label>
+        <input type="number" name="conso" id="conso" min="0" step="10" value="{{ conso }}">
+      </div>
+      <div class="champ">
+        <label for="mode">Mode de facturation</label>
+        <select name="mode" id="mode">
+          <option value="postpaye" {{ 'selected' if mode == 'postpaye' else '' }}>Postpayé</option>
+          <option value="woyofal" {{ 'selected' if mode == 'woyofal' else '' }}>Prépaiement Woyofal</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="carte champs-special">
+    <div class="grille grille--3">
+      <div class="champ">
+        <label for="code_sp">Option tarifaire</label>
+        <select name="code_sp" id="code_sp">
+          {% for code, tarif in tarifs_sp.items() %}
+          <option value="{{ code }}" {{ 'selected' if code == code_sp else '' }}>{{ code }} — {{ tarif.libelle }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="champ">
+        <label for="ps">Puissance souscrite (kW)</label>
+        <input type="number" name="ps" id="ps" min="1" step="10" value="{{ ps }}">
+      </div>
+      <div class="champ">
+        <label for="pmax">Puissance maximale relevée (kW)</label>
+        <input type="number" name="pmax" id="pmax" min="0" step="10" value="{{ pmax }}">
+        <span class="aide">Laisser à zéro si aucun dépassement n'est à facturer.</span>
+      </div>
+      <div class="champ">
+        <label for="k1">Énergie heures creuses K1 (kWh)</label>
+        <input type="number" name="k1" id="k1" min="0" step="1000" value="{{ k1 }}">
+      </div>
+      <div class="champ">
+        <label for="k2">Énergie heures de pointe K2 (kWh)</label>
+        <input type="number" name="k2" id="k2" min="0" step="500" value="{{ k2 }}">
+      </div>
+      <div class="champ">
+        <label class="case" for="mesure_reactif">
+          <input type="checkbox" name="mesure_reactif" id="mesure_reactif" {{ 'checked' if mesure_reactif else '' }}>
+          Énergie réactive mesurée
+        </label>
+        <input type="number" name="reactif" id="reactif" min="0" step="500" value="{{ reactif }}" {{ 'disabled' if not mesure_reactif else '' }}>
+        <span class="aide">Sert au calcul du facteur de puissance et de l'application. Laisser décoché en l'absence de mesure.</span>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div id="resultats">
+  {% include "_simulation_resultats.html" %}
+</div>
+
+{% endblock %}

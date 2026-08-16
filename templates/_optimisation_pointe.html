@@ -1,0 +1,41 @@
+<div class="carte">
+  <p class="caption">Deux leviers d'exploitation : déplacer une part de la consommation des heures de pointe vers les heures creuses, et compenser l'énergie réactive pour relever le facteur de puissance.</p>
+  <form hx-post="/optimisation/pointe/calculer" hx-target="#pointe-resultats" hx-swap="innerHTML"
+        hx-trigger="change, keyup delay:500ms changed, input from:#pointe-part delay:200ms">
+    <div class="grille grille--3">
+      <div class="champ">
+        <label for="pointe-code">Option tarifaire</label>
+        <select name="code" id="pointe-code">
+          {% for c, tarif in tarifs_sp.items() %}
+          <option value="{{ c }}" {{ 'selected' if c == code else '' }}>{{ c }} — {{ tarif.libelle }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="champ">
+        <label for="pointe-ps">Puissance souscrite (kW)</label>
+        <input type="number" name="ps" id="pointe-ps" min="1" step="10" value="{{ ps }}">
+      </div>
+      <div class="champ">
+        <label for="pointe-reactif">Énergie réactive mensuelle (kVArh)</label>
+        <input type="number" name="reactif" id="pointe-reactif" min="0" step="1000" value="{{ reactif }}">
+      </div>
+      <div class="champ">
+        <label for="pointe-k1">Énergie mensuelle heures creuses K1 (kWh)</label>
+        <input type="number" name="k1" id="pointe-k1" min="0" step="1000" value="{{ k1 }}">
+      </div>
+      <div class="champ">
+        <label for="pointe-k2">Énergie mensuelle heures de pointe K2 (kWh)</label>
+        <input type="number" name="k2" id="pointe-k2" min="0" step="500" value="{{ k2 }}">
+      </div>
+      <div class="champ">
+        <label for="pointe-part">Part de la consommation de pointe déplacée — <span id="pointe-part-valeur">{{ part }}</span> %</label>
+        <input type="range" name="part" id="pointe-part" min="0" max="100" step="1" value="{{ part }}"
+               oninput="document.getElementById('pointe-part-valeur').textContent = this.value">
+      </div>
+    </div>
+  </form>
+</div>
+
+<div id="pointe-resultats">
+  {% include "_optimisation_pointe_resultats.html" %}
+</div>

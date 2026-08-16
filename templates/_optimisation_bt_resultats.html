@@ -1,0 +1,44 @@
+{% if not resultats %}
+<div class="carte">
+  <p class="avis avis--alerte">Aucune option tarifaire ne correspond à cette puissance souscrite.</p>
+</div>
+{% else %}
+{% set meilleur = resultats[0] %}
+{% set pire = resultats[-1] %}
+{% set economie = pire.total_ttc - meilleur.total_ttc %}
+<div class="carte">
+  <div class="grille grille--2">
+    <div class="stat">
+      <span class="libelle">Option la plus avantageuse</span>
+      <span class="valeur chiffre">{{ meilleur.code }} — {{ meilleur.mode }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Écart avec l'option la plus chère</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(economie) }}</span>
+      {% if pire.total_ttc %}
+      <span class="delta delta--positif">−{{ fmt.pourcentage(economie / pire.total_ttc, 1) }}</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="carte">{{ graphique | safe }}</div>
+
+<div class="carte">
+  <div class="tableau-scroll">
+    <table>
+      <thead><tr><th>Option</th><th class="num">Montant TTC</th><th class="num">Prix moyen du kWh</th><th class="num">Surcoût</th></tr></thead>
+      <tbody>
+        {% for r in resultats %}
+        <tr>
+          <td>{{ r.option }}</td>
+          <td class="num chiffre">{{ fmt.fcfa(r.total_ttc) }}</td>
+          <td class="num chiffre">{{ fmt.fcfa(r.prix_moyen, 2) }}</td>
+          <td class="num chiffre">{{ fmt.fcfa(r.surcout) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}

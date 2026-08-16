@@ -1,0 +1,32 @@
+<div class="carte">
+  <p class="caption">Les clients spéciaux choisissent une option tarifaire selon la durée annuelle d'utilisation de leur puissance souscrite. Le progiciel compare les options de la famille sur un mois type.</p>
+  <form hx-post="/optimisation/mt-ht/calculer" hx-target="#mtht-resultats" hx-swap="innerHTML"
+        hx-trigger="change, keyup delay:500ms changed">
+    <div class="grille grille--3">
+      <div class="champ">
+        <label for="mtht-famille">Famille</label>
+        <select name="famille" id="mtht-famille">
+          <option value="MT" {{ 'selected' if famille == 'MT' else '' }}>Moyenne tension</option>
+          <option value="HT" {{ 'selected' if famille == 'HT' else '' }}>Haute tension</option>
+        </select>
+      </div>
+      <div class="champ">
+        <label for="mtht-ps">Puissance souscrite (kW)</label>
+        <input type="number" name="ps" id="mtht-ps" min="1" step="10" value="{{ ps }}">
+      </div>
+      <div class="champ"></div>
+      <div class="champ">
+        <label for="mtht-k1">Énergie mensuelle heures creuses K1 (kWh)</label>
+        <input type="number" name="k1" id="mtht-k1" min="0" step="1000" value="{{ k1 }}">
+      </div>
+      <div class="champ">
+        <label for="mtht-k2">Énergie mensuelle heures de pointe K2 (kWh)</label>
+        <input type="number" name="k2" id="mtht-k2" min="0" step="500" value="{{ k2 }}">
+      </div>
+    </div>
+  </form>
+</div>
+
+<div id="mtht-resultats">
+  {% include "_optimisation_mt_ht_resultats.html" %}
+</div>

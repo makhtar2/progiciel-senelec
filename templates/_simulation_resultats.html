@@ -1,0 +1,84 @@
+<div class="carte">
+  <div class="grille grille--4">
+    <div class="stat">
+      <span class="libelle">Montant toutes taxes</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(facture.total_ttc) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Énergie facturée</span>
+      <span class="valeur chiffre">{{ fmt.kwh(facture.energie_kwh) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Prix moyen du kWh</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(facture.prix_moyen_kwh, 2) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Part des taxes</span>
+      <span class="valeur chiffre">{{ fmt.pourcentage(facture.total_taxes / facture.total_ttc if facture.total_ttc else 0) }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="carte">
+  <h2>Répartition du montant total</h2>
+  {{ graphique_composition | safe }}
+</div>
+
+<div class="grille {{ 'grille--2' if graphique_secondaire else '' }}">
+  {% if graphique_secondaire %}
+  <div class="carte">{{ graphique_secondaire | safe }}</div>
+  {% endif %}
+  <div class="carte">
+    <h2>Détail de la facture</h2>
+    <div class="tableau-scroll">
+      <table>
+        <thead>
+          <tr><th>Désignation</th><th>Valeur</th><th class="num">Tarif (F/unité)</th><th class="num">Montant</th></tr>
+        </thead>
+        <tbody>
+          {% for designation, valeur, tarif, montant in facture.lignes %}
+          <tr>
+            <td>{{ designation }}</td>
+            <td class="chiffre">{{ valeur or "" }}</td>
+            <td class="num chiffre">{{ fmt.nombre(tarif) if tarif else "" }}</td>
+            <td class="num chiffre">{{ fmt.fcfa(montant) }}</td>
+          </tr>
+          {% endfor %}
+          <tr class="total">
+            <td colspan="3">Montant total toutes taxes</td>
+            <td class="num chiffre">{{ fmt.fcfa(facture.total_ttc) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="carte" style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+  <button type="button" class="bouton bouton--primaire"
+          hx-post="/simulation/enregistrer" hx-include="#form-simulation"
+          hx-target="#confirmation" hx-swap="innerHTML">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4V3Z"/></svg>
+    Enregistrer la simulation
+  </button>
+
+  <form method="post" action="/simulation/pdf" target="_blank">
+    <input type="hidden" name="segment" value="{{ segment }}">
+    <input type="hidden" name="code_bt" value="{{ code_bt }}">
+    <input type="hidden" name="conso" value="{{ conso }}">
+    <input type="hidden" name="mode" value="{{ mode }}">
+    <input type="hidden" name="code_sp" value="{{ code_sp }}">
+    <input type="hidden" name="ps" value="{{ ps }}">
+    <input type="hidden" name="pmax" value="{{ pmax }}">
+    <input type="hidden" name="k1" value="{{ k1 }}">
+    <input type="hidden" name="k2" value="{{ k2 }}">
+    {% if mesure_reactif %}<input type="hidden" name="mesure_reactif" value="on">{% endif %}
+    <input type="hidden" name="reactif" value="{{ reactif }}">
+    <button type="submit" class="bouton bouton--secondaire">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+      Télécharger la facture en PDF
+    </button>
+  </form>
+
+  <span id="confirmation"></span>
+</div>

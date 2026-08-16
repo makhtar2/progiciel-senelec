@@ -1,0 +1,35 @@
+<div class="carte">
+  <h2>Déplacement de consommation hors pointe</h2>
+  <div class="grille grille--3">
+    <div class="stat">
+      <span class="libelle">Énergie déplacée</span>
+      <span class="valeur chiffre">{{ fmt.kwh(deplacement.kwh_deplaces) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Économie mensuelle</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(deplacement.economie_mensuelle) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Économie annuelle</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(deplacement.economie_annuelle) }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="carte">
+  <h2>Compensation de l'énergie réactive</h2>
+  <div class="grille grille--3">
+    <div class="stat">
+      <span class="libelle">Facteur de puissance actuel</span>
+      <span class="valeur chiffre">{{ fmt.nombre(correction.cos_phi_actuel, 2) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Économie mensuelle à cos φ = 1</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(correction.economie_mensuelle) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Économie annuelle</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(correction.economie_annuelle) }}</span>
+    </div>
+  </div>
+</div>

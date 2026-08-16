@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block contenu %}
+
+<div class="onglets" id="onglets">
+  <a href="#" class="{{ 'actif' if onglet == 'bt' else '' }}" data-onglet="bt"
+     hx-get="/optimisation/bt" hx-target="#onglet-contenu" hx-swap="innerHTML">Basse tension</a>
+  <a href="#" class="{{ 'actif' if onglet == 'mt-ht' else '' }}" data-onglet="mt-ht"
+     hx-get="/optimisation/mt-ht" hx-target="#onglet-contenu" hx-swap="innerHTML">Moyenne et haute tension</a>
+  <a href="#" class="{{ 'actif' if onglet == 'ps' else '' }}" data-onglet="ps"
+     hx-get="/optimisation/ps" hx-target="#onglet-contenu" hx-swap="innerHTML">Puissance souscrite</a>
+  <a href="#" class="{{ 'actif' if onglet == 'pointe' else '' }}" data-onglet="pointe"
+     hx-get="/optimisation/pointe" hx-target="#onglet-contenu" hx-swap="innerHTML">Heures de pointe et cos φ</a>
+</div>
+
+<div id="onglet-contenu">
+  {% if onglet == 'bt' %}{% include "_optimisation_bt.html" %}
+  {% elif onglet == 'mt-ht' %}{% include "_optimisation_mt_ht.html" %}
+  {% elif onglet == 'ps' %}{% include "_optimisation_ps.html" %}
+  {% else %}{% include "_optimisation_pointe.html" %}
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById("onglets").addEventListener("click", (evt) => {
+  const lien = evt.target.closest("a[data-onglet]");
+  if (!lien) return;
+  document.querySelectorAll("#onglets a").forEach((a) => a.classList.remove("actif"));
+  lien.classList.add("actif");
+});
+</script>
+{% endblock %}

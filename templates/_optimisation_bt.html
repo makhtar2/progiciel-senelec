@@ -1,0 +1,28 @@
+<div class="carte">
+  <p class="caption">Pour un même profil de consommation, chaque option ouverte au client est facturée avec la grille en vigueur, puis classée du montant le plus faible au plus élevé.</p>
+  <form hx-post="/optimisation/bt/calculer" hx-target="#bt-resultats" hx-swap="innerHTML"
+        hx-trigger="change, keyup delay:500ms changed">
+    <div class="grille grille--3">
+      <div class="champ">
+        <label for="bt-usage">Usage</label>
+        <select name="usage" id="bt-usage">
+          <option value="domestique" {{ 'selected' if usage == 'domestique' else '' }}>Domestique</option>
+          <option value="professionnel" {{ 'selected' if usage == 'professionnel' else '' }}>Professionnel</option>
+        </select>
+      </div>
+      <div class="champ">
+        <label for="bt-conso">Consommation du bimestre (kWh)</label>
+        <input type="number" name="conso" id="bt-conso" min="0" step="10" value="{{ conso }}">
+      </div>
+      <div class="champ">
+        <label for="bt-ps">Puissance souscrite (kW)</label>
+        <input type="number" name="ps" id="bt-ps" min="0" step="0.5" value="{{ ps }}">
+        <span class="aide">Laisser à zéro pour comparer toutes les puissances.</span>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div id="bt-resultats">
+  {% include "_optimisation_bt_resultats.html" %}
+</div>

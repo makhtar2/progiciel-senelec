@@ -1,0 +1,65 @@
+{% if not simulations %}
+<div class="carte">
+  <p class="avis">Aucune simulation enregistrée pour le moment. Depuis l'écran « Simulation », le bouton « Enregistrer la simulation » alimente ce tableau de bord.</p>
+</div>
+{% else %}
+<div class="carte">
+  <div class="grille grille--4">
+    <div class="stat">
+      <span class="libelle">Simulations enregistrées</span>
+      <span class="valeur chiffre">{{ simulations|length }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Montant cumulé</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(total) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Énergie cumulée</span>
+      <span class="valeur chiffre">{{ fmt.kwh(energie) }}</span>
+    </div>
+    <div class="stat">
+      <span class="libelle">Prix moyen du kWh</span>
+      <span class="valeur chiffre">{{ fmt.fcfa(prix_moyen, 2) if prix_moyen else "—" }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="carte">{{ graphique | safe }}</div>
+
+<div class="carte">
+  <div class="tableau-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Code</th><th>Libellé</th><th>Période</th>
+          <th class="num">Énergie</th><th class="num">Montant HT</th><th class="num">Montant TTC</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in simulations %}
+        <tr>
+          <td class="chiffre">{{ s.horodatage.replace("T", " ") }}</td>
+          <td>{{ s.code_tarif }}</td>
+          <td>{{ s.libelle }}</td>
+          <td>{{ s.periode }}</td>
+          <td class="num chiffre">{{ fmt.kwh(s.energie_kwh) }}</td>
+          <td class="num chiffre">{{ fmt.fcfa(s.montant_ht) }}</td>
+          <td class="num chiffre">{{ fmt.fcfa(s.total_ttc) }}</td>
+          <td>
+            <button type="button" class="bouton bouton--discret"
+                    hx-post="/tableau-de-bord/supprimer/{{ s.id }}"
+                    hx-target="#tableau-contenu" hx-swap="innerHTML"
+                    hx-confirm="Supprimer cette simulation ?">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/>
+                <line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
