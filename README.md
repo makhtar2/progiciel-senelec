@@ -80,3 +80,14 @@ Les tests du moteur de calcul se lancent avec :
 ```bash
 python3 -m pytest tests
 ```
+
+## Déploiement
+
+Le dépôt contient un `render.yaml` : sur [render.com](https://render.com),
+« New → Blueprint », sélectionner ce dépôt GitHub, Render détecte la
+configuration automatiquement (build, commande de lancement).
+
+Le plan gratuit de Render n'a pas de disque persistant : la base SQLite du
+tableau de bord est réinitialisée à chaque redéploiement ou redémarrage du
+service. Pour conserver l'historique des simulations durablement, ajouter un
+disque persistant (payant) monté sur `data/`.
