@@ -46,7 +46,7 @@ def comparer_bt(conso_kwh: float, usage: str, ps_kw: float = None) -> list:
 
 
 def comparer_speciaux(famille: str, k1_kwh: float, k2_kwh: float, ps_kw: float,
-                      pmax_kw: float = None, energie_reactive: float = 0.0) -> list:
+                      pmax_kw: float = None, energie_reactive: float = None) -> list:
     """Compare les options tarifaires d'une même famille de clients spéciaux.
 
     ``famille`` vaut "MT" ou "HT". Retourne la liste des factures simulées,
@@ -121,7 +121,7 @@ def ps_optimale(code: str, pmax_mensuelles: list, ps_min: float = None,
 
 def deplacement_pointe(code: str, k1_kwh: float, k2_kwh: float, ps_kw: float,
                        part_deplacee: float,
-                       energie_reactive: float = 0.0) -> dict:
+                       energie_reactive: float = None) -> dict:
     """Économie réalisée en déplaçant une part de la consommation des heures
     de pointe (K2) vers les heures creuses (K1), à énergie totale constante.
 

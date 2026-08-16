@@ -121,3 +121,13 @@ def test_correction_cos_phi_gain_positif():
     r = optimisation.correction_cos_phi("MT-TG", 40000, 10000, 300, 60000)
     assert r["cos_phi_actuel"] < 0.80
     assert r["economie_annuelle"] > 0
+
+
+def test_energie_reactive_nulle_donne_minoration_cos_phi_un():
+    # energie_reactive=0.0 signifie cos phi mesuré à 1,00 (minoration de
+    # 3,75 %), à distinguer de l'absence de mesure (energie_reactive=None).
+    mesure = facturation.facture_speciale("MT-TG", 40000, 10000, 300,
+                                          energie_reactive=0.0, redevance=0.0)
+    non_mesure = facturation.facture_speciale("MT-TG", 40000, 10000, 300,
+                                               redevance=0.0)
+    assert mesure.montant_ht < non_mesure.montant_ht

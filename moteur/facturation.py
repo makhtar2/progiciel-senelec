@@ -104,13 +104,15 @@ def cos_phi(energie_active: float, energie_reactive: float) -> float:
 
 
 def facture_speciale(code: str, k1_kwh: float, k2_kwh: float, ps_kw: float,
-                     pmax_kw: float = None, energie_reactive: float = 0.0,
+                     pmax_kw: float = None, energie_reactive: float = None,
                      redevance: float = tarifs.REDEVANCE_SPECIAUX) -> Facture:
     """Facture mensuelle d'un client spécial (DGP, PGP, MT ou HT).
 
     ``pmax_kw`` est la puissance maximale relevée sur la période : tout
     dépassement de la puissance souscrite est facturé au taux de prime fixe
-    multiplié par ``COEF_DEPASSEMENT_PS``.
+    multiplié par ``COEF_DEPASSEMENT_PS``. ``energie_reactive`` à ``None``
+    signifie qu'aucune mesure n'est disponible (aucune application) ; à
+    ``0.0``, elle signifie un cos φ mesuré à 1,00 (minoration incluse).
     """
     tarif = TARIFS_SPECIAUX[code]
     energie = k1_kwh + k2_kwh
@@ -121,7 +123,7 @@ def facture_speciale(code: str, k1_kwh: float, k2_kwh: float, ps_kw: float,
     prime_fixe = ps_kw * tarif.prime_fixe
 
     # Sans mesure d'énergie réactive, aucune application n'est calculée.
-    if energie_reactive > 0:
+    if energie_reactive is not None:
         fp = cos_phi(energie, energie_reactive)
         taux_app = tarifs.taux_application(fp)
     else:

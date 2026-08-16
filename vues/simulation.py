@@ -1,12 +1,14 @@
 """Écran de simulation : reconstitution détaillée d'une facture SENELEC."""
 
+from datetime import datetime
+
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
 from moteur import facturation, stockage
 from moteur.tarifs import TARIFS_BT, TARIFS_SPECIAUX
-from . import theme
+from . import export_pdf, theme
 
 
 def _tableau_facture(facture) -> pd.DataFrame:
@@ -105,9 +107,19 @@ def _resultats(facture, graphique_secondaire=None):
         st.dataframe(_tableau_facture(facture), hide_index=True,
                      width="stretch")
 
-    if st.button("Enregistrer la simulation", icon=":material/save:"):
-        stockage.enregistrer(facture)
-        st.success("Simulation enregistrée. Elle est visible dans le tableau de bord.")
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Enregistrer la simulation", icon=":material/save:"):
+            stockage.enregistrer(facture)
+            st.success("Simulation enregistrée. Elle est visible dans le tableau de bord.")
+    with c2:
+        st.download_button(
+            "Télécharger la facture en PDF",
+            data=export_pdf.facture_pdf_bytes(facture),
+            file_name=f"facture_{facture.code_tarif}_{datetime.now():%Y%m%d_%H%M}.pdf",
+            mime="application/pdf",
+            icon=":material/download:",
+        )
 
 
 def afficher():
@@ -158,11 +170,17 @@ def afficher():
                                  min_value=0.0, value=40000.0, step=1000.0)
             k2 = st.number_input("Énergie heures de pointe K2 (kWh)",
                                  min_value=0.0, value=8000.0, step=500.0)
-            reactif = st.number_input("Énergie réactive (kVArh)",
-                                      min_value=0.0, value=0.0, step=500.0,
-                                      help="Sert au calcul du facteur de puissance et de l'application.")
+            mesure_reactif = st.checkbox("Énergie réactive mesurée")
+            reactif = st.number_input(
+                "Énergie réactive (kVArh)", min_value=0.0, value=0.0,
+                step=500.0, disabled=not mesure_reactif,
+                help="Sert au calcul du facteur de puissance et de "
+                     "l'application. Laisser décoché en l'absence de "
+                     "mesure : aucune application n'est alors calculée.",
+            )
 
-        facture = facturation.facture_speciale(code, k1, k2, ps,
-                                               pmax_kw=pmax or None,
-                                               energie_reactive=reactif)
+        facture = facturation.facture_speciale(
+            code, k1, k2, ps, pmax_kw=pmax or None,
+            energie_reactive=reactif if mesure_reactif else None,
+        )
         _resultats(facture)
