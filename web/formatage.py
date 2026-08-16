@@ -3,7 +3,7 @@
 
 def fcfa(montant: float, decimales: int = 0) -> str:
     """Formate un montant en francs CFA avec séparateur de milliers."""
-    return f"{montant:,.{decimales}f}".replace(",", " ").replace(".", ",") + " F"
+    return f"{montant:,.{decimales}f}".replace(",", " ").replace(".", ",") + " FCFA"
 
 
 def kwh(valeur: float) -> str:

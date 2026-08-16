@@ -6,7 +6,7 @@ from fpdf import FPDF
 
 from . import formatage as fmt
 
-_LARGEURS = (85, 35, 35, 30)
+_LARGEURS = (78, 32, 30, 40)
 _ENTETES = ("Désignation", "Valeur", "Tarif (F/unité)", "Montant")
 
 
@@ -56,14 +56,6 @@ def facture_pdf_bytes(facture) -> bytes:
     pdf.ln(12)
 
     pdf.set_font("Helvetica", "I", 8)
-    pdf.multi_cell(
-        0, 5,
-        _safe(
-            "Simulation issue du progiciel d'optimisation de la facture "
-            "électrique au Sénégal — mémoire de Master II, École "
-            "Polytechnique de Thiès. Grille tarifaire hors taxes reproduite "
-            "dans le mémoire ; montants indicatifs, sans valeur contractuelle."
-        ),
-    )
+    pdf.multi_cell(0, 5, _safe("Progiciel d'optimisation de la facture électrique"))
 
     return bytes(pdf.output())
